@@ -34,7 +34,6 @@ allSetZ$metaZ <- and$OverallZScore
 
 abi1 <- data.frame(study = names, N = N)
 
-# NB! change according the final list of studies!
 allSetZ2 <- gather(allSetZ, "study", "Z_score", 1:(ncol(allSetZ)-2))
 allSetZ2$concordance <- 'concordant'
 
