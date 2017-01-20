@@ -45,7 +45,7 @@ p <- ggplot(chromosome, aes(x = abs_coord, y = abs_coord)) + theme_bw() +
 # sort and tweak the data (trans or cis + trans eQTLsFDR0.05-Probelevel.txt)
 trans <- fread('eQTLsFDR0.05-ProbeLevel.txt')
 
-trans_f <- trans[, c(1, 2, 3, 4, 5, 6, 7, 11, 25:27), with = F]
+trans_f <- trans[, c(1, 2, 3, 4, 5, 6, 7, 11), with = F]
 
 # Calculate absolute chromosome coordinates for SNPs and probes
 
