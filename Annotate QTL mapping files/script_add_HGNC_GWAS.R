@@ -65,7 +65,7 @@ snp_annot <- as.data.table(snp_annot)
 qtl3 <- merge(qtl2, snp_annot, by.x = 'SNPName', by.y = 'ID', all.x = T)
 qtl3 <- qtl3[, c(2, 1, 3:ncol(qtl3)), with = F]
 colnames(qtl3)[25:27] <- c('GWAS_traits', 'GWAS_Pvalues', 'GWAS_PUBIDs')
-qtl3 <- qtl3[order(qtl3$PValue), ]
+qtl3 <- qtl3[order(abs(qtl3$OverallZScore), decreasing = T), ]
 
 write.table(qtl3, '/Users/urmovosa/Documents/move_to_mac/trans_eQTL_meta_analysis/trans_PRS_meta_analysis_20170115/trans_meta_analysis_20170115/Interpretation/trans_eQTLsFDR0.05-ProbeLevel_PC_corrected_ENSEMBL75_HGNC_GWAS_information_added.txt', sep = '\t', quote = F, row.names = F)
 
