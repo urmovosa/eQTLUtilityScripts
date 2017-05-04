@@ -26,7 +26,7 @@ allSetZ <- as.data.frame(and$zScoreMatrix)
 
 allSetZ$metaZ <- as.numeric(and$metaZ)
 # NB! change according the final list of studies!
-allSetZ2 <- gather(allSetZ, "study", "Z_score", 1:21)
+allSetZ2 <- gather(allSetZ, "study", "Z_score", 1:ncol(and$sampleSizes))
 allSetZ2$concordance <- 'concordant'
 
 
