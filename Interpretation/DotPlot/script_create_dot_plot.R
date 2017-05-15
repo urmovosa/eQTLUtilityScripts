@@ -2,7 +2,6 @@ library(data.table)
 library(ggplot2)
 
 ## Setup the graph
-# N = 13,913
 
 # Read in chromosome sizes
 chromosome <- fread('chr_sizes.txt')
@@ -80,7 +79,7 @@ p + geom_point(data = as.data.frame(trans_f), aes(x = abs_SNPChrPos, y = abs_Pro
 
 ggsave('dot_plot.png', height = 9, width = 9 * 1.1, dpi = 400)
 
-# Size is Z-scpre instead of P-value
+# Size is Z-score instead of P-value
 p + geom_point(data = as.data.frame(trans_f), aes(x = abs_SNPChrPos, y = abs_ProbeChrPos, size = abs(OverallZScore)), alpha = 0.15, colour = 'black') + 
   scale_size_continuous( range = c(1, 5), guide = guide_legend(title = expression(paste("meta-analysis Z-score"))))
 
