@@ -49,13 +49,13 @@ allSetZ2 <- allSetZ2[!is.na(allSetZ2$Z_score), ]
 
 allSetZ2 <- allSetZ2 %>%
   group_by(study) %>%
-  mutate(nr_of_assoc = n(), nr_of_concordant = length(study[concordance == 'concordant']), nr_of_unconcordant = length(study[concordance == 'unconcordant']), 
+  mutate(nr_of_assoc = n(), perc_overlapping_with_meta = round((n()/nrow(and)) * 100, digits = 1), nr_of_concordant = length(study[concordance == 'concordant']), nr_of_unconcordant = length(study[concordance == 'unconcordant']), 
          perc_of_concordant = round((length(study[concordance == 'concordant'])/n()) * 100, digits = 1), y_pos = (max(Z_score)))
 
-abi2 <- unique(allSetZ2[, c(3, 6, 7, 8, 9, 10)])
+abi2 <- unique(allSetZ2[, c(3, 6, 7, 8, 9, 10, 11)])
 
 ann_text <- data.frame(metaZ = (min(allSetZ2$metaZ) + 0.1 * min(allSetZ2$metaZ)), Z_score = abi2$y_pos,
-                       lab = paste("nr. of assoc: ", abi2$nr_of_assoc, "\nconcordant: ", abi2$nr_of_concordant, "\nunconcordant: ", abi2$nr_of_unconcordant, "\nconcordant: ", abi2$perc_of_concordant, '%', sep = ''),
+                       lab = paste("nr. of assoc: ", abi2$nr_of_assoc, "\ntested in dataset: ", abi2$perc_overlapping_with_meta, '%', "\nconcordant: ", abi2$nr_of_concordant, "\nunconcordant: ", abi2$nr_of_unconcordant, "\nconcordant: ", abi2$perc_of_concordant, '%', sep = ''),
                        study = factor(unique(allSetZ2$study)), concordance = factor('concordant', levels = c('concordant', 'unconcordant')))
 
 ann_text <- merge(ann_text, abi1, by = "study")
