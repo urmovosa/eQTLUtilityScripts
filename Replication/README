@@ -1,0 +1,12 @@
+Script for visualization of eQTL replication results. 
+Currently writes out .png, adjust if neccessary.
+
+Running the script:
+
+module load R
+
+Rscript script_replication_visualization.R \
+{discovery analysis: eQTLsFDR0.05-PrunedLevel.txt} \
+{replication analysis: eQTLsFDR0.05-PrunedLevel.txt} \
+{replication analysis: eQTLsReplicated.txt} \
+{file name: e.g. "Illumina_replication_in_FHS"}
