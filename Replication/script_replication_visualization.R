@@ -10,19 +10,14 @@ library(ggplot2)
 
 args <- commandArgs(trailingOnly=TRUE)
 
-discovery <- args[1]
-replication <- args[2]
-replication_sig <- args[3]
-plotname <- args[4]
-
 ## read in the discovery meta-analysis results:
 
 discovery <- fread(args[1])
 
 ##  replication:
 
-replication <- fread(args[2])
-replication_sig <- fread(args[3])
+replication <- fread(args[3])
+replication_sig <- fread(args[2])
 
 # merge together 
 
@@ -92,4 +87,4 @@ p <- ggplot(all_merged, aes(x = Discovery_OverallZScore, y = Replication_Overall
 
 #scale_y_continuous(limits = c(min(all_merged$Discovery_OverallZScore, all_merged$Replication_OverallZScore, na.rm = T), max(all_merged$Discovery_OverallZScore, all_merged$Replication_OverallZScore, na.rm = T))) + 
 
-ggsave(paste0(arg[4], '.png'), height = 7 * 0.9, width = 8 * 0.9, dpi = 600, units = 'in')
+ggsave(paste0(args[4], '.png'), height = 7 * 0.9, width = 8 * 0.9, dpi = 600, units = 'in')
