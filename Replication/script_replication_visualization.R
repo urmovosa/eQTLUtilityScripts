@@ -83,7 +83,8 @@ p <- ggplot(all_merged, aes(x = Discovery_OverallZScore, y = Replication_Overall
   scale_color_manual(values = c("yes" = "red", "no" = "darkgrey")) + 
   xlab('Discovery analysis Z-score') + 
   ylab('Replication analysis Z-score') +
-  geom_text(data = ann_text, aes(label = lab), size = 3, hjust=0, vjust = 1, col = 'black')
+  geom_text(data = ann_text, aes(label = lab), size = 3, hjust=0, vjust = 1, col = 'black') +
+  ggtitle(paste('Discovery cohort:', args[5], ' \nReplication cohort:', args[6]))
 
 #scale_y_continuous(limits = c(min(all_merged$Discovery_OverallZScore, all_merged$Replication_OverallZScore, na.rm = T), max(all_merged$Discovery_OverallZScore, all_merged$Replication_OverallZScore, na.rm = T))) + 
 
