@@ -88,4 +88,4 @@ p <- ggplot(all_merged, aes(x = Discovery_OverallZScore, y = Replication_Overall
 
 #scale_y_continuous(limits = c(min(all_merged$Discovery_OverallZScore, all_merged$Replication_OverallZScore, na.rm = T), max(all_merged$Discovery_OverallZScore, all_merged$Replication_OverallZScore, na.rm = T))) + 
 
-ggsave(paste0(args[4], '.png'), height = 7 * 0.9, width = 8 * 0.9, dpi = 600, units = 'in')
+ggsave(paste0(args[4], '.pdf'), height = 7, width = 8, dpi = 600, units = 'in')

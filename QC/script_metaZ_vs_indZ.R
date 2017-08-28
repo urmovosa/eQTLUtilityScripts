@@ -70,8 +70,10 @@ p <- ggplot(allSetZ2, aes(x = metaZ, y = Z_score, colour = concordance)) +
   geom_hline(aes(yintercept = 0), linetype = "longdash", colour = 'forestgreen') + 
   geom_vline(aes(xintercept = 0), linetype = "longdash", colour = 'forestgreen') + 
   scale_color_manual(values = c('black', 'red')) + 
+  scale_y_continuous(limits = c(min(all_merged$Discovery_OverallZScore, all_merged$Replication_OverallZScore), max(all_merged$Discovery_OverallZScore, all_merged$Replication_OverallZScore)))
   ylab('Study Z-score') + 
-  xlab('Meta-analysis Z-score') + geom_text(data = ann_text, aes(label = lab), size = 2, hjust=0, vjust = 1) + theme(legend.position = "none")
+  xlab('Meta-analysis Z-score') + 
+  geom_text(data = ann_text, aes(label = lab), size = 2, hjust=0, vjust = 1) + theme(legend.position = "none")
 #p
 
 ggsave(p, filename = 'z_scores_interim.png', width = 8, height = 8)

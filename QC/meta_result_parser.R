@@ -33,7 +33,7 @@ parseMetaResult <- function(x){
   
   metaZ <- andRaw$OverallZScore
 
-  annotation <- data.frame(SNPName_meta = andRaw$SNPName, SNPChr_meta = andRaw$SNPChr, SNPChrPos_meta = andRaw$SNPChrPos, chr_meta = andRaw$ProbeChr, ProbeCenterPos_meta = andRaw$ProbeCenterChrPos, SNPType_meta = andRaw$SNPType, AlleleAssessed_meta = andRaw$AlleleAssessed)
+  annotation <- data.frame(SNPName_meta = andRaw$SNPName, SNPChr_meta = andRaw$SNPChr, SNPChrPos_meta = andRaw$SNPChrPos, ProbeChr_meta = andRaw$ProbeChr, ProbeCenterPos_meta = andRaw$ProbeCenterChrPos, SNPType_meta = andRaw$SNPType, AlleleAssessed_meta = andRaw$AlleleAssessed)
   
   return(list(annotation = annotation, zScoreMatrix = zScores, sampleSizes = Samples, metaZ = metaZ))
   
