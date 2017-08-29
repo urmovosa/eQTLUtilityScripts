@@ -32,10 +32,20 @@ parseMetaResult <- function(x){
   rownames(Samples) <- paste(andRaw$SNPName, andRaw$ProbeName)
   
   Sum_samples <- rowSums(Samples, na.rm = T)
+  Sum_samples <- data.frame(eQTL = names(Sum_samples), N = Sum_samples)
+  SNP <- str_replace(Sum_samples$eQTL, ' .*', '')
+  Probe <- str_replace(Sum_samples$eQTL, '.* ', '')
+  
+  Sum_samples <- data.frame(SNP = SNP, Probe = Probe, N = Sum_samples$N)
   
   # Find in how many datasets the eQTL was tested:
   
   cohort_count <- apply(Samples, 1, function(x) sum(!is.na(x)))
+  cohort_count <- data.frame(eQTL = names(cohort_count), N = cohort_count)
+  SNP <- str_replace(cohort_count$eQTL, ' .*', '')
+  Probe <- str_replace(cohort_count$eQTL, '.* ', '')
+  
+  cohort_count <- data.frame(SNP = SNP, Probe = Probe, N = cohort_count$N)
   
   metaZ <- andRaw$OverallZScore
 
