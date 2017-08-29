@@ -31,11 +31,22 @@ parseMetaResult <- function(x){
   colnames(Samples) <- Names
   rownames(Samples) <- paste(andRaw$SNPName, andRaw$ProbeName)
   
+  Sum_samples <- rowSums(Samples, na.rm = T)
+  
+  # Find in how many datasets the eQTL was tested:
+  
+  cohort_count <- apply(Samples, 1, function(x) sum(!is.na(x)))
+  
   metaZ <- andRaw$OverallZScore
 
   annotation <- data.frame(SNPName_meta = andRaw$SNPName, SNPChr_meta = andRaw$SNPChr, SNPChrPos_meta = andRaw$SNPChrPos, ProbeChr_meta = andRaw$ProbeChr, ProbeCenterPos_meta = andRaw$ProbeCenterChrPos, SNPType_meta = andRaw$SNPType, AlleleAssessed_meta = andRaw$AlleleAssessed)
   
-  return(list(annotation = annotation, zScoreMatrix = zScores, sampleSizes = Samples, metaZ = metaZ))
+  return(list(annotation = annotation, 
+              zScoreMatrix = zScores, 
+              sampleSizes = Samples, 
+              sumSampleSize = Sum_samples,
+              nrOfCohorts = cohort_count,
+              metaZ = metaZ))
   
 }
 
