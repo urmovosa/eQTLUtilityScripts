@@ -48,7 +48,9 @@ parseMetaResult <- function(x){
   cohort_count <- data.frame(SNP = SNP, Probe = Probe, N = cohort_count$N)
   
   metaZ <- andRaw$OverallZScore
-
+  P_value <- andRaw$PValue
+  
+  
   annotation <- data.frame(SNPName_meta = andRaw$SNPName, SNPChr_meta = andRaw$SNPChr, SNPChrPos_meta = andRaw$SNPChrPos, ProbeChr_meta = andRaw$ProbeChr, ProbeCenterPos_meta = andRaw$ProbeCenterChrPos, SNPType_meta = andRaw$SNPType, AlleleAssessed_meta = andRaw$AlleleAssessed)
   
   return(list(annotation = annotation, 
@@ -56,7 +58,8 @@ parseMetaResult <- function(x){
               sampleSizes = Samples, 
               sumSampleSize = Sum_samples,
               nrOfCohorts = cohort_count,
-              metaZ = metaZ))
+              metaZ = metaZ,
+              uncorrected_P = P_value))
   
 }
 
