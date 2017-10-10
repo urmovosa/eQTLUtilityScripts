@@ -1,6 +1,7 @@
 #############################################################################################################
 # This script uses discovery meta-analysis output, replication output files and constructs replication plot #
 #############################################################################################################
+if(!exists("parseMetaResult", mode = "function")) source("meta_result_parser.R")
 
 library(data.table)
 library(stringr)
@@ -94,8 +95,12 @@ statistics_overview <- all_merged %>%
          nr_of_replicated_same_dir = sum(!is.na(Replication_OverallZScore) & sig_replication == 'yes' & same_dir == 'yes')) %>%
   mutate(tested_eqtl_perc = round(nr_of_tested_in_replication/nr_of_disc_assoc, digits = 4) * 100,
          same_dir_perc = round(same_direction/nr_of_tested_in_replication, digits = 4) * 100,
+<<<<<<< HEAD
          replication_perc = round(nr_of_replicated_same_dir/nr_of_tested_in_replication, digits = 4) * 100,
          replicated_same_dir_perc = round(nr_of_replicated_same_dir/nr_of_sig_in_replication, digits = 4) * 100)
+=======
+         replication_perc = round(nr_of_replicated_same_dir/nr_of_tested_in_replication, digits = 4) * 100)
+>>>>>>> 53efb9bfef9490335803615f37fdce26349962d7
 
 # define limits for x and y axes
 
@@ -107,12 +112,20 @@ y_axis <- y_axis + 0.1 * y_axis
 
 ann_text <- data.frame(Discovery_OverallZScore = -x_axis, 
                        Replication_OverallZScore = y_axis,
+<<<<<<< HEAD
                        lab = paste0("Nr. of discovery associations: \n", statistics_overview$nr_of_disc_assoc, 
                                    "\nTested in replication cohort: \n", statistics_overview$nr_of_tested_in_replication, ' (', statistics_overview$tested_eqtl_perc, '%)',
                                    "\nSig. replicated in replication cohort: \n", statistics_overview$nr_of_sig_in_replication, ' (', round(statistics_overview$nr_of_sig_in_replication/statistics_overview$nr_of_tested_in_replication * 100, 2), '%)',
                                    "\nSig. replicated with same direction: \n", statistics_overview$nr_of_replicated_same_dir, ' (', bold(round(statistics_overview$nr_of_replicated_same_dir/statistics_overview$nr_of_sig_in_replication * 100, 2)), '%\)'),
                        `Replication\nFDR<0.05` = factor('yes', levels = c('yes', 'no')))
 
+=======
+                       lab = paste0("Nr. of discovery assoc: \n", statistics_overview$nr_of_disc_assoc, 
+                                   "\nTested in replication cohort: \n", statistics_overview$nr_of_tested_in_replication, ' (', statistics_overview$tested_eqtl_perc, '%)',
+                                   "\nSame dir. in replication cohort: \n", statistics_overview$same_direction, ' (', statistics_overview$same_dir_perc, '%)', 
+                                    "\nSig. replicated in replication cohort (same dir.): \n", statistics_overview$nr_of_replicated_same_dir, ' (', statistics_overview$replication_perc, '%)'),
+                       `Replication\nFDR<0.05` = factor('yes', levels = c('yes', 'no')))
+>>>>>>> 53efb9bfef9490335803615f37fdce26349962d7
 colnames(ann_text)[ncol(ann_text)] <- "Sig. replication"
 
 ###
@@ -125,9 +138,17 @@ all_merged$`FDR<0.05` <- factor(all_merged$`FDR<0.05`,
                                             levels = c('yes', 'no'))
 
 all_merged$`Effect in replication\ncohort:` <- 'non sig.'
+<<<<<<< HEAD
 all_merged[all_merged$`FDR<0.05` == 'yes' & all_merged$same_dir == 'no', ]$`Effect in replication\ncohort:` <- 'FDR<0.05 and opp. dir.'
 all_merged[all_merged$`FDR<0.05` == 'yes' & all_merged$same_dir == 'yes', ]$`Effect in replication\ncohort:` <- 'FDR<0.05 and same dir.'
 all_merged$`Effect in replication\ncohort:` <- factor(all_merged$`Effect in replication\ncohort:`, levels = c('non sig.', 'FDR<0.05 and opp. dir.', 'FDR<0.05 and same dir.'))
+=======
+all_merged[all_merged$`FDR<0.05` == 'yes' & all_merged$same_dir == 'no', ]$`Effect in replication\ncohort:` <- 'FDR<0.05 and opp. dir'
+all_merged[all_merged$`FDR<0.05` == 'yes' & all_merged$same_dir == 'yes', ]$`Effect in replication\ncohort:` <- 'FDR<0.05 and same dir.'
+all_merged$`Effect in replication\ncohort:` <- factor(all_merged$`Effect in replication\ncohort:`, levels = c('non sig.', 'FDR<0.05 and opp. dir', 'FDR<0.05 and same dir.'))
+
+
+>>>>>>> 53efb9bfef9490335803615f37fdce26349962d7
 
 
 p <- ggplot(all_merged, aes(x = Discovery_OverallZScore, y = Replication_OverallZScore, colour = `Effect in replication\ncohort:`)) + 
@@ -135,12 +156,31 @@ p <- ggplot(all_merged, aes(x = Discovery_OverallZScore, y = Replication_Overall
   theme_classic() +
   geom_hline(yintercept = 0, linetype = 2, size = 0.5) + 
   geom_vline(xintercept = 0, linetype = 2, size = 0.5) + 
+<<<<<<< HEAD
   scale_color_manual(values = c("FDR<0.05 and same dir." = "red", "FDR<0.05 and opp. dir." = "orange", "non sig." = "darkgrey")) + 
   xlab('Discovery analysis Z-score') + 
   ylab('Replication analysis Z-score') +
   geom_text(data = ann_text, aes(label = lab), size = 4, hjust=0, vjust = 1, col = 'black') +
+=======
+  scale_color_manual(values = c("FDR<0.05 and same dir." = "red", "FDR<0.05 and opp. dir" = "orange", "non sig." = "darkgrey")) + 
+  xlab('Discovery analysis Z-score') + 
+  ylab('Replication analysis Z-score') +
+  geom_text(data = ann_text, aes(label = lab), size = 3, hjust=0, vjust = 1, col = 'black') +
+>>>>>>> 53efb9bfef9490335803615f37fdce26349962d7
   ggtitle(paste0('Discovery cohort: ', args[5], ' (N=', Ndisc, ')\nReplication cohort: ', args[6], ' (N=', Nrep, ')')) +
   scale_y_continuous(limits = c(-y_axis, y_axis)) + 
   scale_x_continuous(limits = c(-x_axis, x_axis))
 
+<<<<<<< HEAD
 ggsave(paste0(args[4], '_', Sys.Date(), '.pdf'), height = 7 * 1.2, width = 8 * 1.2, dpi = 600, units = 'in')
+=======
+# +
+#   scale_y_continuous(limits = c(-max(max(abs(all_merged$Replication_OverallZScore + 0.1 * min(all_merged$Discovery_OverallZScore, na.rm = T)), na.rm = T)), 
+#                                 min(abs(all_merged$Replication_OverallZScore), na.rm = T), na.rm = T),
+#                                 max(max(abs(all_merged$Replication_OverallZScore), na.rm = T), 
+#                                     min(abs(all_merged$Replication_OverallZScore), na.rm = T), na.rm = T)) +
+#   scale_x_continuous(limits = c(-max(max(abs(all_merged$Discovery_OverallZScore), na.rm = T), min(abs(all_merged$Discovery_OverallZScore), na.rm = T), na.rm = T),
+#                                 max(max(abs(all_merged$Discovery_OverallZScore), na.rm = T), min(abs(all_merged$Discovery_OverallZScore), na.rm = T), na.rm = T))) 
+
+ggsave(paste0(args[4], '.pdf'), height = 7 * 1.2, width = 8 * 1.2, dpi = 600, units = 'in')
+>>>>>>> 53efb9bfef9490335803615f37fdce26349962d7
