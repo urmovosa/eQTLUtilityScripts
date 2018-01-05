@@ -22,7 +22,7 @@ replication_sig <- fread(args[2])
 # calculate the sample sizes for discovery and replication
 
 
-Ndisc <- t(as.data.frame(str_split(discovery$DatasetsNrSamples, ';')))
+Ndisc <- t(as.data.frame(str_split(unique(discovery$DatasetsNrSamples), ';')))
 rownames(Ndisc) <- paste(discovery$SNPName, discovery$ProbeName)
 Ndisc[Ndisc == "-"] <- NA
 
@@ -41,7 +41,7 @@ Ndisc <- max(rowSums(Ndisc))
 
 colnames(replication)[c(2, 5, 14)] <- c('SNPName', 'ProbeName', 'DatasetsNrSamples')
 
-Nrep <- t(as.data.frame(str_split(replication$DatasetsNrSamples, ';')))
+Nrep <- t(as.data.frame(str_split(unique(replication$DatasetsNrSamples), ';')))
 dim(Nrep)
 dim(replication)
 rownames(Nrep) <- paste(replication$SNPName, replication$ProbeName)
