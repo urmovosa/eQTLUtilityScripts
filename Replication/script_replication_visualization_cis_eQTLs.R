@@ -10,8 +10,6 @@ library(ggplot2)
 
 args <- commandArgs(trailingOnly=TRUE)
 
-args <- commandArgs(trailingOnly=TRUE)
-
 ## read in the discovery meta-analysis results:
 
 discovery <- fread(args[1])
