@@ -4,12 +4,12 @@ library(ggplot2)
 ## Setup the graph
 
 # Read in chromosome sizes
-chromosome <- data.frame(chr = c(1:22, 'X', 'Y'),
-size = c(249250621, 243199373, 198022430, 191154276, 180915260, 
-  171115067, 159138663, 146364022, 141213431, 135534747,
-  135006516, 133851895, 115169878, 107349540, 102531392, 
-  90354753, 81195210, 78077248, 59128983, 63025520, 
-  48129895, 51304566, 155270560, 59373566))
+chromosome <- data.frame(chr = c("1", "2", "3", "4", "5", "6", "7", "X", "8", "9", "10",
+                                 "11", "12", "13", "14", "15", "16", "17", "18", "20", "Y", "19", "22", "21"),
+size = c(249250621, 243199373, 198022430, 191154276, 180915260, 171115067, 159138663, 155270560, 146364022,
+         141213431, 135534747, 135006516, 133851895, 115169878, 107349540, 102531392, 90354753, 81195210,
+         78077248,  63025520,  59373566,  59128983, 51304566, 48129895))
+chromosome$chr <- as.character(chromosome$chr)
 
 xy <- chromosome[chromosome$chr %in% c('X', 'Y'), ]
 chromosome <- chromosome[chromosome$chr %in% c(1:22), ]
@@ -50,43 +50,40 @@ p <- ggplot(chromosome, aes(x = abs_coord, y = abs_coord)) + theme_bw() +
 # sort and tweak the data (trans or cis + trans eQTLsFDR0.05-Probelevel.txt)
 trans <- fread('eQTLsFDR0.05-ProbeLevel.txt')
 
-#trans_f <- trans[, c(1, 2, 3, 4, 5, 6, 7, 11, 25:27), with = F]
-trans_f <- trans
 # Calculate absolute chromosome coordinates for SNPs and probes
 
-#
-trans_f$abs_SNPChrPos <- 0
-trans_f[trans_f$SNPChr == 1, ]$abs_SNPChrPos <- trans_f[trans_f$SNPChr == 1, ]$SNPChrPos
+trans$abs_SNPChrPos <- 0
+trans[trans$SNPChr == 1, ]$abs_SNPChrPos <- trans[trans$SNPChr == 1, ]$SNPChrPos
 
 
 for (i in 2:22){
   
-  trans_f[trans_f$SNPChr == i, ]$abs_SNPChrPos <- trans_f[trans_f$SNPChr == i, ]$SNPChrPos + chromosome[chromosome$chr == i - 1, ]$abs_coord
+  trans[trans$SNPChr == i, ]$abs_SNPChrPos <- trans[trans$SNPChr == i, ]$SNPChrPos + chromosome[chromosome$chr == i - 1, ]$abs_coord
   
 }
 
 #
-trans_f$abs_ProbeChrPos <- 0
-trans_f[trans_f$ProbeChr == 1, ]$abs_ProbeChrPos <- trans_f[trans_f$ProbeChr == 1, ]$ProbeCenterChrPos
-trans_f$abs_ProbeChrPos <- as.numeric(trans_f$abs_ProbeChrPos)
+trans$abs_ProbeChrPos <- 0
+trans[trans$ProbeChr == 1, ]$abs_ProbeChrPos <- trans[trans$ProbeChr == 1, ]$ProbeCenterChrPos
+trans$abs_ProbeChrPos <- as.numeric(trans$abs_ProbeChrPos)
 
 for (i in c(2:24)){
   
-  trans_f[trans_f$ProbeChr == chromosome$chr[i], ]$abs_ProbeChrPos <- as.numeric(trans_f[trans_f$ProbeChr == chromosome$chr[i], ]$ProbeCenterChrPos) + as.numeric(chromosome[chromosome$chr == chromosome$chr[i - 1], ]$abs_coord)
+  trans[trans$ProbeChr == chromosome$chr[i], ]$abs_ProbeChrPos <- as.numeric(trans[trans$ProbeChr == chromosome$chr[i], ]$ProbeCenterChrPos) + as.numeric(chromosome[chromosome$chr == chromosome$chr[i - 1], ]$abs_coord)
   
 }
 
 # visualize locations on dot-plot
 
 # Size is -log10(P-value)
-p + geom_point(data = as.data.frame(trans_f), aes(x = abs_SNPChrPos, y = abs_ProbeChrPos, size = -log10(PValue)), alpha = 0.15, colour = 'black') + 
+p + geom_point(data = as.data.frame(trans), aes(x = abs_SNPChrPos, y = abs_ProbeChrPos, size = -log10(PValue)), alpha = 0.15, colour = 'black') + 
   scale_size_continuous(breaks = c(10, 50, 100, 200, 300), range = c(1, 5), guide = guide_legend(title = expression(paste(-log[10]("P-value"))))) + 
   theme(axis.title=element_text(size = 18, face = "bold")) + ylab('Gene position (hg19)')
 
 ggsave('dot_plot.png', height = 9, width = 9 * 1.1, dpi = 400)
 
 # Size is Z-score instead of P-value
-p + geom_point(data = as.data.frame(trans_f), aes(x = abs_SNPChrPos, y = abs_ProbeChrPos, size = abs(OverallZScore)), alpha = 0.15, colour = 'black') + 
+p + geom_point(data = as.data.frame(trans), aes(x = abs_SNPChrPos, y = abs_ProbeChrPos, size = abs(OverallZScore)), alpha = 0.15, colour = 'black') + 
   scale_size_continuous( range = c(1, 5), guide = guide_legend(title = expression(paste("meta-analysis Z-score"))))
 
 ggsave('dot_plot_Z.png', height = 9, width = 9, dpi = 400)
