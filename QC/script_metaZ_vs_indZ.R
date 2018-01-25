@@ -15,28 +15,50 @@ library(ggplot2)
 
 ## read in the meta-analysis summary
 
-and <- fread('../Interpretation/eQTLsFDR0.05-ProbeLevel.txt')
+and <- fread('/Users/urmovosa/Documents/move_to_mac/trans_eQTL_meta_analysis/trans_PRS_meta_analysis_20180125/eQTLsFDR-Significant-0.05.txt')
 
+## Replace the names with newest versions:
 
-allSetZ <- and$DatasetsZScores
-allSetZ <- read.table(text = allSetZ, sep = ';', na.strings = '-')
+# Use mapping file: 1. col old dataset name (name_old), 2. column new standardized name (name_new)
+# Order the names so that they should emerge on the plot
+name_mapping <- fread('/Users/urmovosa/Documents/move_to_mac/trans_eQTL_meta_analysis/trans_PRS_meta_analysis_20180125/name_mapping.txt')
 
-# works only where there are some eQTL which is present in all datasets
-names <- and$DatasetsWhereSNPProbePairIsAvailableAndPassesQC[!str_detect(and$DatasetsWhereSNPProbePairIsAvailableAndPassesQC, '-')][1]
-names <- unlist(str_split(names, ';'))
+# works only where there is some eQTL which is present in all datasets
+
+names_orig <- and$DatasetsWhereSNPProbePairIsAvailableAndPassesQC[!str_detect(and$DatasetsWhereSNPProbePairIsAvailableAndPassesQC, ';-;')][1]
+names_orig <- unlist(str_split(names_orig, ';'))
+
+names <- data.frame(name_old = names_orig)
+names <- merge(names, name_mapping, by = 'name_old', all.x = T)
+names$name_new <- as.character(names$name_new)
+names$name_old <- as.character(names$name_old)
+
+names <- names[match(names_orig, names$name_old), ]
+
+if (length(names$name_new[is.na(names$name_new)] > 0)){print(paste0('Issue with old name: ', as.character(names[is.na(names$name_new), ]$name_old), '. Check your name mapping file!'))}
+
+and2 <- and[, c(2, 5, 13), with = F] %>%
+  separate(DatasetsZScores, as.character(names$name_old), ";")
+
+allSetZ <- and2[, -c(1, 2), with = F]
 
 N <- and$DatasetsNrSamples[!str_detect(and$DatasetsNrSamples, '-')][1]
 N <- unlist(str_split(N, ';'))
 
-colnames(allSetZ) <- names
+colnames(allSetZ) <- names$name_new
 allSetZ$eQTL <- paste(and$SNPName, and$ProbeName, sep = '_')
 allSetZ$metaZ <- and$OverallZScore
 
-abi1 <- data.frame(study = names, N = N)
+abi1 <- data.frame(study = names$name_new, N = N)
 
-allSetZ2 <- gather(allSetZ, "study", "Z_score", 1:(ncol(allSetZ)-2))
+allSetZ2 <- gather(allSetZ, "study", "Z_score", 1:(ncol(allSetZ) - 2))
 allSetZ2$concordance <- 'concordant'
 
+#allSetZ2[allSetZ2$metaZ == '-', ]$metaZ <- NA
+allSetZ2[allSetZ2$Z_score == '-', ]$Z_score <- NA
+
+allSetZ2$metaZ <- as.numeric(allSetZ2$metaZ)
+allSetZ2$Z_score <- as.numeric(allSetZ2$Z_score)
 
 allSetZ2[allSetZ2$Z_score < 0 & allSetZ2$metaZ > 0 | 
            allSetZ2$Z_score > 0 & allSetZ2$metaZ < 0 | 
@@ -61,19 +83,32 @@ ann_text <- data.frame(metaZ = (min(allSetZ2$metaZ) + 0.1 * min(allSetZ2$metaZ))
 ann_text <- merge(ann_text, abi1, by = "study")
 ann_text$lab <- paste('N: ', ann_text$N, '\n', ann_text$lab, sep = '')
 
+min_Z <- min(as.numeric(allSetZ2$metaZ), as.numeric(allSetZ2$Z_score))
+max_Z <- max(as.numeric(allSetZ2$metaZ), as.numeric(allSetZ2$Z_score))
+
+ann_text$study <- as.character(ann_text$study)
+
+# Order the studies by the platform and name:
+allSetZ2 <- allSetZ2 %>% ungroup()
+
+allSetZ2$study <- factor(allSetZ2$study, 
+                         levels = as.character(name_mapping$name_new))
+
+ann_text$study <- factor(ann_text$study, 
+                         levels = as.character(name_mapping$name_new))
+
 # visualize
 
 p <- ggplot(allSetZ2, aes(x = metaZ, y = Z_score, colour = concordance)) + 
   geom_point(alpha = 0.2) + 
   theme_bw() + 
-  facet_wrap(~study, scales = 'free_y') + 
+  facet_wrap(~ study, scales = 'free_y') + 
   geom_hline(aes(yintercept = 0), linetype = "longdash", colour = 'forestgreen') + 
   geom_vline(aes(xintercept = 0), linetype = "longdash", colour = 'forestgreen') + 
   scale_color_manual(values = c('black', 'red')) + 
-  scale_y_continuous(limits = c(min(all_merged$Discovery_OverallZScore, all_merged$Replication_OverallZScore), max(all_merged$Discovery_OverallZScore, all_merged$Replication_OverallZScore)))
   ylab('Study Z-score') + 
   xlab('Meta-analysis Z-score') + 
-  geom_text(data = ann_text, aes(label = lab), size = 2, hjust=0, vjust = 1) + theme(legend.position = "none")
-#p
+  geom_text(data = ann_text, aes(label = lab, x = metaZ, y = Z_score), size = 2, hjust = 0, vjust = 1, inherit.aes = FALSE) + 
+  theme(legend.position = "none")
 
-ggsave(p, filename = 'z_scores_interim.png', width = 8, height = 8)
+ggsave(p, filename = 'z_scores_interim.png', width = 10 * 1.7 * 1.4, height = 10 * 1.5 * 1.2)
