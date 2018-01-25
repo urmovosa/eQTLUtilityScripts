@@ -15,13 +15,13 @@ library(ggplot2)
 
 ## read in the meta-analysis summary
 
-and <- fread('/Users/urmovosa/Documents/move_to_mac/trans_eQTL_meta_analysis/trans_PRS_meta_analysis_20180125/eQTLsFDR-Significant-0.05.txt')
+and <- fread('eQTLsFDR-Significant-0.05.txt')
 
 ## Replace the names with newest versions:
 
 # Use mapping file: 1. col old dataset name (name_old), 2. column new standardized name (name_new)
 # Order the names so that they should emerge on the plot
-name_mapping <- fread('/Users/urmovosa/Documents/move_to_mac/trans_eQTL_meta_analysis/trans_PRS_meta_analysis_20180125/name_mapping.txt')
+name_mapping <- fread('name_mapping.txt')
 
 # works only where there is some eQTL which is present in all datasets
 
@@ -111,4 +111,4 @@ p <- ggplot(allSetZ2, aes(x = metaZ, y = Z_score, colour = concordance)) +
   geom_text(data = ann_text, aes(label = lab, x = metaZ, y = Z_score), size = 2, hjust = 0, vjust = 1, inherit.aes = FALSE) + 
   theme(legend.position = "none")
 
-ggsave(p, filename = 'z_scores_interim.png', width = 10 * 1.7 * 1.4, height = 10 * 1.5 * 1.2)
+ggsave(p, filename = 'Compare_meta_Z_vs_cohort_Z_', Sys.Date(),'.png', width = 10 * 1.7 * 1.4, height = 10 * 1.5 * 1.2)
