@@ -111,4 +111,4 @@ p <- ggplot(allSetZ2, aes(x = metaZ, y = Z_score, colour = concordance)) +
   geom_text(data = ann_text, aes(label = lab, x = metaZ, y = Z_score), size = 2, hjust = 0, vjust = 1, inherit.aes = FALSE) + 
   theme(legend.position = "none")
 
-ggsave(p, filename = 'Compare_meta_Z_vs_cohort_Z_', Sys.Date(),'.png', width = 10 * 1.7 * 1.4, height = 10 * 1.5 * 1.2)
+ggsave(p, filename = paste0('Compare_meta_Z_vs_cohort_Z_', Sys.Date(),'.png'), width = 10 * 1.7 * 1.4, height = 10 * 1.5 * 1.2)
