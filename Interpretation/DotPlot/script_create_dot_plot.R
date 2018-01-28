@@ -80,10 +80,10 @@ p + geom_point(data = as.data.frame(trans), aes(x = abs_SNPChrPos, y = abs_Probe
   scale_size_continuous(breaks = c(10, 50, 100, 200, 300), range = c(1, 5), guide = guide_legend(title = expression(paste(-log[10]("P-value"))))) + 
   theme(axis.title=element_text(size = 18, face = "bold")) + ylab('Gene position (hg19)')
 
-ggsave('dot_plot.png', height = 9, width = 9 * 1.1, dpi = 400)
+ggsave(filename = paste0('dot_plot_', Sys.Date(), '.png'), height = 9, width = 9 * 1.1, dpi = 400)
 
 # Size is Z-score instead of P-value
 p + geom_point(data = as.data.frame(trans), aes(x = abs_SNPChrPos, y = abs_ProbeChrPos, size = abs(OverallZScore)), alpha = 0.15, colour = 'black') + 
   scale_size_continuous( range = c(1, 5), guide = guide_legend(title = expression(paste("meta-analysis Z-score"))))
 
-ggsave('dot_plot_Z.png', height = 9, width = 9, dpi = 400)
+ggsave(filename = paste0('dot_plot_Z_', Sys.Date(), '.png'), height = 9, width = 9, dpi = 400)
