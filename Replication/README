@@ -1,14 +1,14 @@
 Script for visualization of eQTL replication results. 
 Currently writes out .png, adjust if neccessary.
+Accepts gzipped input files: significant ones from discovery cohort and all from replication cohort.
 
 Running the script:
 
 module load R
 
 Rscript script_replication_visualization.R \
-{discovery analysis: eQTLsFDR0.05-PrunedLevel.txt} \
-{replication analysis: eQTLsFDR0.05-PrunedLevel.txt} \
-{replication analysis: eQTLsReplicated.txt} \
+{discovery analysis: eQTLsFDR0.05-ProbeLevel.txt.gz} \
+{replication analysis: eQTLsFDR-ProbeLevel.txt.gz} \
 {file name: e.g. "Illumina_replication_in_NESDA"} \
 {discovery cohort name: e.g. "Illumina arrays"} \
 {replication cohort name: e.g. "NESDA Affymetrix U291 arrays"}
