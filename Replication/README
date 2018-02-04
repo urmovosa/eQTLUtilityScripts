@@ -15,7 +15,7 @@ Rscript script_replication_visualization.R \
 
 Running the script: script_replication_visualization_combined.R
 
-Make a file: path_file.txt
+Make a tab-delimited file: path_file.txt
 
 Format: 
 
