@@ -8,6 +8,7 @@ library(reshape2)
 library(rtracklayer)
 library(stringr)
 library(data.table)
+library(GGally)
 
 ##########################
 # 1. Visualize Z-scores ##
@@ -56,11 +57,11 @@ allSetZ2[allSetZ2$Z_score < 0 & allSetZ2$metaZ > 0 |
            is.na(allSetZ2$metaZ) | 
            is.na(allSetZ2$Z_score), ]$concordance <- 'unconcordant'
 
+allSetZ2$study <- factor(allSetZ2$study, levels = name_mapping$name_new)
+
 # pairwise Z-score comparison
 
-library(GGally)
-
-png('z_scores_pairwise_interim.png', width = 40, height = 40, units = 'in', res = 300)
+png(paste0('z_scores_pairwise_', Sys.Date(), '.png'), width = 40, height = 40, units = 'in', res = 300)
 p <- ggpairs(allSetZ,
              lower = list(continuous = wrap("points", alpha = 0.1))) + theme_bw()
 

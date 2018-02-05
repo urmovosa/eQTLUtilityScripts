@@ -9,13 +9,12 @@ library(tidyr)
 library(ggplot2)
 library(data.table)
 library(stringr)
-library(dplyr)
 library(tidyr)
 library(ggplot2)
 
 ## read in the meta-analysis summary
 
-and <- fread('eQTLsFDR-Significant-0.05.txt')
+and <- fread('eQTLsFDR0.05-ProbeLevel.txt')
 
 ## Replace the names with newest versions:
 

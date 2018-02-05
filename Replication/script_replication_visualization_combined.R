@@ -150,7 +150,7 @@ p <- ggplot(all_merged, aes(x = Discovery_OverallZScore, y = Replication_Overall
   scale_color_manual(values = c("FDR<0.05 and same dir." = "red", "FDR<0.05 and opp. dir." = "orange", "non sig." = "darkgrey"), drop = FALSE) + 
   xlab('Discovery analysis Z-score') + 
   ylab('Replication analysis Z-score') +
-  geom_text(data = ann_text, aes(label = lab), size = 4, hjust=0, vjust = 1, col = 'black') +
+  geom_text(data = ann_text, aes(label = lab), size = 4, hjust = 0, vjust = 1, col = 'black') +
   ggtitle(paste0('Discovery cohort: ', data_loc$Disc_name[i], ' (N=', Ndisc, ')\nReplication cohort: ', data_loc$Rep_name[i], ' (N=', Nrep, ')')) +
   scale_y_continuous(limits = c(-y_axis, y_axis)) + 
   scale_x_continuous(limits = c(-x_axis, x_axis))
@@ -170,4 +170,4 @@ hlay <- t(hlay)
 
 ml <- grid.arrange(grobs = pl, layout_matrix = hlay)
 
-ggsave(paste0('Combined', '_', Sys.Date(), '.pdf'), ml, height = 7 * 1.2 * 3.25, width = 8 * 1.2 * 3.25, dpi = 600, units = 'in')
+ggsave(paste0('Combined', '_', Sys.Date(), '.pdf'), ml, height = 7 * 1.3 * 3.25, width = 8 * 1.3 * 3.25, dpi = 600, units = 'in')
