@@ -4,7 +4,7 @@ Script for standardizing the QTL mapping pipeline meta-analysis result files. It
 
 2. It enables to change cohort ordering in the file.
 
-3. It enables to remove some per-cohort summary statistics from the file. NB! **Results of the meta-analysis will still be based on all the cohorts in the original meta-analysis!**
+3. It enables to remove some per-cohort summary statistics from the file. NB! Meta-analyzed summary statistics will still be based on all the cohorts in the original meta-analysis!
 
 Three mandatory arguments:
 
