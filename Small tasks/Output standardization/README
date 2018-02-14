@@ -1,6 +1,6 @@
 Script for standardizing the QTL mapping pipeline meta-analysis result files. It achieves three tasks:
 
-1. It standardizes/changes all cohort names in the output file-
+1. It standardizes/changes all cohort names in the output file.
 
 2. It enables to change cohort ordering in the file.
 
@@ -14,7 +14,7 @@ Three mandatory arguments:
         
         name_new- cohort name in the fixed eQTL file.
         
-        add_to_file- whether or not to add respective cohort to the output file (yes/no)
+        add_to_file- whether or not to add respective cohort to the output file (yes/no).
 
 --orig_file Original file form eQTLMapping meta-analysis output. Can be gzipped or unzipped.
 
