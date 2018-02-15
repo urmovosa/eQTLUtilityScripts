@@ -81,7 +81,8 @@ field = field.split(';')
 
 #check if all the datasets are in the mapping file:
 if len(set(cohort_order).intersection(field)) != len(set(field)):
-  print "Warning! There are fewer cohorts in the name mapping file than in the eQTL file!"
+  print "Error! There are fewer cohorts in the name mapping file than in the eQTL file!"
+  quit()
 
 
 # Remove elements not in the name mapping file:
