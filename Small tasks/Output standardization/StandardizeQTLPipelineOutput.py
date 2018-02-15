@@ -2,6 +2,7 @@ import cProfile
 import gzip
 import argparse
 
+# Set up the usage of external arguments:
 parser = argparse.ArgumentParser(description = 'Update eQTL output files to new cohort names and order.')
 
 parser.add_argument('--mapping_file', metavar = 'name mapping file',
@@ -14,6 +15,8 @@ parser.add_argument('--fixed_file', metavar = 'name of the fixed eQTL mapping ou
                     help = 'Fixed file where cohort order and naming is updated. No file extensions needed and the file will be gzipped.')
 
 args = parser.parse_args()
+
+# Messages:
 print 'Mapping file is:', args.mapping_file
 print 'Original eQTL mapping output file:', args.orig_file
 print 'Fixed eQTL mapping output file will be named:', args.fixed_file + '.txt.gz'
