@@ -1,0 +1,12 @@
+This script extracts annotation from Epigenome Roadmap and makes a plot for requested region.
+
+Arguments:
+
+chr: chr1/chr2/...
+start position
+end position
+graphic device: png/pdf
+
+Usage: 
+
+Rscript script_EpigenomeRoadmap.R chr3 57500000 58100000 png
