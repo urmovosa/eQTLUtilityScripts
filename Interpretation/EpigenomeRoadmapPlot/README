@@ -3,8 +3,13 @@ This script extracts annotation from Epigenome Roadmap and makes a plot for requ
 Arguments:
 
 chr: chr1/chr2/...
+<<<<<<< HEAD
 start position: start pos in hg19 
 end position: start pos in hg19
+=======
+start position
+end position
+>>>>>>> adc91d26a3913a18a83a0572e0129b3eb78aba97
 graphic device: png/pdf
 
 Usage: 
