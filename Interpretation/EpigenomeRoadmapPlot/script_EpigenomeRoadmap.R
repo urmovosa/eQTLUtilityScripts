@@ -11,9 +11,14 @@ args <- commandArgs(trailingOnly = TRUE)
 
 # Specify the positions
 chr <- args[1]
-pos_start <- args[2]
-pos_end <- args[3]
+pos_start <- as.numeric(args[2])
+pos_end <- as.numeric(args[3])
 graphics_device <- args[4]
+
+print(paste0('Chromosome: ', chr))
+print(paste0('Start position: ', pos_start))
+print(paste0('End position: ', pos_end))
+print(paste0('Will write file into format: ', graphics_device))
 
 # Color scheme for annotations:
 
@@ -62,47 +67,43 @@ tissue_colors$x_pos <- 5
 tissue_colors$y_pos <- c(1:nrow(tissue_colors))
 tissue_colors$color <- "unknown"
 
-tissue_colors[tissue_colors$tissue == "ES-deriv", ]$color <- "red"
-tissue_colors[tissue_colors$tissue == "ESC", ]$color <- "lightblue"
+tissue_colors[tissue_colors$tissue == "ES-deriv", ]$color <- "goldenrod"
+tissue_colors[tissue_colors$tissue == "ESC", ]$color <- "darkgrey"
 tissue_colors[tissue_colors$tissue == "iPSC", ]$color <- "lightgreen"
 tissue_colors[tissue_colors$tissue == "Mesench", ]$color <- "salmon"
-tissue_colors[tissue_colors$tissue == "IMR90", ]$color <- "orange"
-tissue_colors[tissue_colors$tissue == "Blood & T-cell", ]$color <- "#D1CE77"
+tissue_colors[tissue_colors$tissue == "IMR90", ]$color <- "#D1CE77"
+tissue_colors[tissue_colors$tissue == "Blood & T-cell", ]$color <- "darkgreen"
 tissue_colors[tissue_colors$tissue == "Epithelial", ]$color <- "navy"
-
-tissue_colors[tissue_colors$tissue == "HSC & B-cell", ]$color <- "#D1CE77"
-tissue_colors[tissue_colors$tissue == "Adipose", ]$color <- "#D1CE77"
-tissue_colors[tissue_colors$tissue == "Brain", ]$color <- "goldenrod"
-tissue_colors[tissue_colors$tissue == "Digestive", ]$color <- "lightblue"
-tissue_colors[tissue_colors$tissue == "ENCODE2012", ]$color <- "lightgreen"
-tissue_colors[tissue_colors$tissue == "Heart", ]$color <- "salmon"
 tissue_colors[tissue_colors$tissue == "HSC & B-cell", ]$color <- "orange"
-
-tissue_colors[tissue_colors$tissue == "Muscle", ]$color <- "brown"
-
-tissue_colors[tissue_colors$tissue == "Myosat", ]$color <- "navy"
-tissue_colors[tissue_colors$tissue == "Neurosph", ]$color <- "#D1CE77"
-tissue_colors[tissue_colors$tissue == "Other", ]$color <- "#D1CE77"
-
-tissue_colors[tissue_colors$tissue == "Sm. Muscle", ]$color <- "sandybrown"
-tissue_colors[tissue_colors$tissue == "Thymus", ]$color <- "grey"
+tissue_colors[tissue_colors$tissue == "Adipose", ]$color <- "darkgoldenrod1"
+tissue_colors[tissue_colors$tissue == "Brain", ]$color <- "red"
+tissue_colors[tissue_colors$tissue == "Digestive", ]$color <- "lightblue"
+tissue_colors[tissue_colors$tissue == "ENCODE2012", ]$color <- "brown"
+tissue_colors[tissue_colors$tissue == "Heart", ]$color <- "blue"
+tissue_colors[tissue_colors$tissue == "HSC & B-cell", ]$color <- "firebrick"
+tissue_colors[tissue_colors$tissue == "Muscle", ]$color <- "skyblue"
+tissue_colors[tissue_colors$tissue == "Myosat", ]$color <- "pink"
+tissue_colors[tissue_colors$tissue == "Neurosph", ]$color <- "sienna1"
+tissue_colors[tissue_colors$tissue == "Other", ]$color <- "aquamarine"
+tissue_colors[tissue_colors$tissue == "Sm. Muscle", ]$color <- "grey"
+tissue_colors[tissue_colors$tissue == "Thymus", ]$color <- "black"
 
 ############################
 # Here starts the plotting #
 ############################
 
 if (graphics_device == "png") {
-  png(paste(paste(chr, pos_start, pos_end, sep = "_"), "_", Sys.Date(), "_.png", sep = ""), width = 10, height = 6, units = "in", res = 600)
+  png(paste(paste(chr, pos_start, pos_end, sep = "_"), "_", Sys.Date(), "_.png", sep = ""), width = 11, height = 4, units = "in", res = 600)
 }
 if (graphics_device == "pdf") {
-  pdf(paste(paste(chr, pos_start, pos_end, sep = "_"), "_", Sys.Date(), "_.pdf", sep = ""), width = 10, height = 6)
+  pdf(paste(paste(chr, pos_start, pos_end, sep = "_"), "_", Sys.Date(), "_.pdf", sep = ""), width = 11, height = 4)
 }
 
 layout(matrix(c(1, 2, 3), 1, 3),
-  widths = c(10, 40, 10), heights = c(1, 1, 1)
+  widths = c(15, 40, 15), heights = c(1, 1, 1)
 )
 
-par(mar = c(0, 0, 0, 0), oma = c(4, 2, 2, 2))
+par(mar = c(0, 0, 0, 0), oma = c(4, 2, 2, 3))
 
 plot(NULL, xlim = c(1, 6), ylim = c(0, length(unique(full_marks$sample))), axes = F)
 
