@@ -30,4 +30,10 @@ Optional arguments:
 
 Basic usage:
 
+--remove_cohort_specific_information If this flag is added, cohort-specific information is removed from the input file.
+
+-h help
+
+**Basic usage:** 
+
 python StandardizeQTLPipelineOutput.py name_mapping_file.txt input_eQTL_file.txt.gz standardized_eQTL_file
