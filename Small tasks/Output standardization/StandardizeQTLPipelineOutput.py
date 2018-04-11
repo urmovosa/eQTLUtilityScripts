@@ -14,12 +14,17 @@ parser.add_argument('--orig_file', metavar = 'original eQTL mapping output file'
 parser.add_argument('--fixed_file', metavar = 'name of the fixed eQTL mapping output file',
                     help = 'Fixed file where cohort order and naming is updated. No file extensions needed and the file will be gzipped.')
 
+parser.add_argument('--remove_cohort_specific_information',
+                    help = 'If added, DatasetsWhereSNPProbePairIsAvailableAndPassesQC column will be replaced with the number of datasets; DatasetsZScores will be removed;	DatasetsNrSamples will be replaced with the sum of all the samples tested for this QTL', 
+                    action = 'store_true')
+
 args = parser.parse_args()
 
 # Messages:
 print 'Mapping file is:', args.mapping_file
 print 'Original eQTL mapping output file:', args.orig_file
 print 'Fixed eQTL mapping output file will be named:', args.fixed_file + '.txt.gz'
+print 'Remove all cohort-specific information:', args.remove_cohort_specific_information
 
 # Read in mapping file:
 mapping = {}
@@ -133,7 +138,18 @@ with gzip.open(args.fixed_file + '.txt.gz', mode = 'w') as output:
     with gzip.open(args.orig_file, mode = 'r') as trans:
       
       line = trans.readline()
-      output.write(line)
+      # Change the column names if minimal output is needed:
+      if args.remove_cohort_specific_information:
+        fields = line.split('\t')
+        fields[11] = 'NrOfCohortsTested'
+        fields[12] = 'CohortZScores'
+        fields[13] = 'SumNumberOfSamples'
+        del fields[12]
+        line = '\t'.join(fields)
+        output.write(line)
+      else:
+        output.write(line)
+
       line = trans.readline()
       while line:
         # Split to fields:
@@ -148,24 +164,36 @@ with gzip.open(args.fixed_file + '.txt.gz', mode = 'w') as output:
         DatasetsWhereSNPProbePairIsAvailableAndPassesQC = fields[11]
         DatasetsWhereSNPProbePairIsAvailableAndPassesQC = DatasetsWhereSNPProbePairIsAvailableAndPassesQC.split(';')
         
-        sorted_output = []
-        
-        for i in range(0, len(index_for_reorder)):
-          sorted_output.append(DatasetsWhereSNPProbePairIsAvailableAndPassesQC[index_for_reorder[i]])
+        # if cohort-specific info removed then sum the sample sizes
+        if args.remove_cohort_specific_information:
+          DatasetNr = DatasetsWhereSNPProbePairIsAvailableAndPassesQC
+          # If "-" then replace with 0 else replace with 1
+          DatasetNr = [1 if x != '-' else x for x in DatasetNr]
+          DatasetNr = [0 if x == '-' else x for x in DatasetNr]
+          DatasetNr = [int(i) for i in DatasetNr]
+          DatasetNr = sum(DatasetNr)
+          fields[11] = str(DatasetNr)
           
-        # Update the naming of the cohorts
-        for i in range(0, len(sorted_output)):
-          if sorted_output[i] == '-':
-            sorted_output[i] = '-'
-          else:
-            sorted_output[i] = mapping.get(sorted_output[i])
-        
-        # Removing unwanted cohorts:
-        filtered_cohorts = []
-        for i in range(0, len(index_for_keeping)):
-          filtered_cohorts.append(sorted_output[index_for_keeping[i]])
+        else:
+          sorted_output = []
           
-        fields[11] = ';'.join(filtered_cohorts)
+          for i in range(0, len(index_for_reorder)):
+            sorted_output.append(DatasetsWhereSNPProbePairIsAvailableAndPassesQC[index_for_reorder[i]])
+            
+          # Update the naming of the cohorts
+          for i in range(0, len(sorted_output)):
+            if sorted_output[i] == '-':
+              sorted_output[i] = '-'
+            else:
+              sorted_output[i] = mapping.get(sorted_output[i])
+              
+          
+          # Removing unwanted cohorts:
+          filtered_cohorts = []
+          for i in range(0, len(index_for_keeping)):
+            filtered_cohorts.append(sorted_output[index_for_keeping[i]])
+            
+          fields[11] = ';'.join(filtered_cohorts)
         
         #####################
         # Dataset Z-scores  #
@@ -196,14 +224,24 @@ with gzip.open(args.fixed_file + '.txt.gz', mode = 'w') as output:
         sorted_output = []
         for i in range(0, len(index_for_reorder)):
           sorted_output.append(DatasetsNrSamples[index_for_reorder[i]])
-
-        # Removing unwanted cohorts:
-        filtered_cohorts = []
-        for i in range(0, len(index_for_keeping)):
-          filtered_cohorts.append(sorted_output[index_for_keeping[i]])
-          
-        fields[13] = ';'.join(filtered_cohorts)
         
+        # if cohort-specific info removed then sum the sample sizes
+        if args.remove_cohort_specific_information:
+          sorted_output = [0 if x == '-' else x for x in sorted_output]
+          sorted_output = [int(i) for i in sorted_output]
+          sorted_output = sum(sorted_output)
+          fields[13] = str(sorted_output)
+        else:
+          # Removing unwanted cohorts:
+          filtered_cohorts = []
+          for i in range(0, len(index_for_keeping)):
+            filtered_cohorts.append(sorted_output[index_for_keeping[i]])
+          
+          fields[13] = ';'.join(filtered_cohorts)
+
+        if args.remove_cohort_specific_information:
+          del fields[12]
+          
         line_out = '\t'.join(fields)
         
         output.write(line_out)
@@ -213,7 +251,18 @@ with gzip.open(args.fixed_file + '.txt.gz', mode = 'w') as output:
     with open(args.orig_file, mode = 'r') as trans:
       
       line = trans.readline()
-      output.write(line)
+      # Change the column names if minimal output is needed:
+      if args.remove_cohort_specific_information:
+        fields = line.split('\t')
+        fields[11] = 'NrOfCohortsTested'
+        fields[12] = 'CohortZScores'
+        fields[13] = 'SumNumberOfSamples'
+        del fields[12]
+        line = '\t'.join(fields)
+        output.write(line)
+      else:
+        output.write(line)
+        
       line = trans.readline()
       while line:
         # Split to fields:
@@ -228,24 +277,36 @@ with gzip.open(args.fixed_file + '.txt.gz', mode = 'w') as output:
         DatasetsWhereSNPProbePairIsAvailableAndPassesQC = fields[11]
         DatasetsWhereSNPProbePairIsAvailableAndPassesQC = DatasetsWhereSNPProbePairIsAvailableAndPassesQC.split(';')
         
-        sorted_output = []
-        
-        for i in range(0, len(index_for_reorder)):
-          sorted_output.append(DatasetsWhereSNPProbePairIsAvailableAndPassesQC[index_for_reorder[i]])
+        # if cohort-specific info removed then sum the sample sizes
+        if args.remove_cohort_specific_information:
+          DatasetNr = DatasetsWhereSNPProbePairIsAvailableAndPassesQC
+          # If "-" then replace with 0 else replace with 1
+          DatasetNr = [1 if x != '-' else x for x in DatasetNr]
+          DatasetNr = [0 if x == '-' else x for x in DatasetNr]
+          DatasetNr = [int(i) for i in DatasetNr]
+          DatasetNr = sum(DatasetNr)
+          fields[11] = str(DatasetNr)
           
-        # Update the naming of the cohorts
-        for i in range(0, len(sorted_output)):
-          if sorted_output[i] == '-':
-            sorted_output[i] = '-'
-          else:
-            sorted_output[i] = mapping.get(sorted_output[i])
-        
-        # Removing unwanted cohorts:
-        filtered_cohorts = []
-        for i in range(0, len(index_for_keeping)):
-          filtered_cohorts.append(sorted_output[index_for_keeping[i]])
+        else:
+          sorted_output = []
           
-        fields[11] = ';'.join(filtered_cohorts)
+          for i in range(0, len(index_for_reorder)):
+            sorted_output.append(DatasetsWhereSNPProbePairIsAvailableAndPassesQC[index_for_reorder[i]])
+            
+          # Update the naming of the cohorts
+          for i in range(0, len(sorted_output)):
+            if sorted_output[i] == '-':
+              sorted_output[i] = '-'
+            else:
+              sorted_output[i] = mapping.get(sorted_output[i])
+              
+          
+          # Removing unwanted cohorts:
+          filtered_cohorts = []
+          for i in range(0, len(index_for_keeping)):
+            filtered_cohorts.append(sorted_output[index_for_keeping[i]])
+            
+          fields[11] = ';'.join(filtered_cohorts)
         
         #####################
         # Dataset Z-scores  #
@@ -266,7 +327,7 @@ with gzip.open(args.fixed_file + '.txt.gz', mode = 'w') as output:
           
         fields[12] = ';'.join(filtered_cohorts)
         
-        ###############
+      ###############
         # Dataset N's #
         ###############
         
@@ -276,14 +337,24 @@ with gzip.open(args.fixed_file + '.txt.gz', mode = 'w') as output:
         sorted_output = []
         for i in range(0, len(index_for_reorder)):
           sorted_output.append(DatasetsNrSamples[index_for_reorder[i]])
-
-        # Removing unwanted cohorts:
-        filtered_cohorts = []
-        for i in range(0, len(index_for_keeping)):
-          filtered_cohorts.append(sorted_output[index_for_keeping[i]])
-          
-        fields[13] = ';'.join(filtered_cohorts)
         
+        # if cohort-specific info removed then sum the sample sizes
+        if args.remove_cohort_specific_information:
+          sorted_output = [0 if x == '-' else x for x in sorted_output]
+          sorted_output = [int(i) for i in sorted_output]
+          sorted_output = sum(sorted_output)
+          fields[13] = str(sorted_output)
+        else:
+          # Removing unwanted cohorts:
+          filtered_cohorts = []
+          for i in range(0, len(index_for_keeping)):
+            filtered_cohorts.append(sorted_output[index_for_keeping[i]])
+          
+          fields[13] = ';'.join(filtered_cohorts)
+
+        if args.remove_cohort_specific_information:
+          del fields[12]
+          
         line_out = '\t'.join(fields)
         
         output.write(line_out)
