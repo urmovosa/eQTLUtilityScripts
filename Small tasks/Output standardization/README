@@ -6,7 +6,7 @@ Script for standardizing the QTL mapping pipeline meta-analysis result files. It
 
 3. It enables to remove some per-cohort summary statistics from the file. NB! Meta-analyzed summary statistics will still be based on all the cohorts in the original meta-analysis!
 
-4. It enables to remove cohort-specific information (cohort names, Z-scores and sample sizes). Instead report the number of cohorts and number of samples where QTL was tested.
+4. It enables to remove cohort-specific information (cohort names, Z-scores and sample sizes). Instead report the number of cohorts and number of samples where given QTL was tested.
 
 Three mandatory arguments:
 
@@ -23,6 +23,12 @@ Three mandatory arguments:
 --fixed_file  Fixed file where cohort order and naming is updated. No file extensions needed and the file will be gzipped.
 
 Optional arguments:
+
+--remove_cohort_specific_information If this flag is added, cohort-specific information is removed from the output file.
+
+-h help
+
+Basic usage:
 
 --remove_cohort_specific_information If this flag is added, cohort-specific information is removed from the output file.
 
