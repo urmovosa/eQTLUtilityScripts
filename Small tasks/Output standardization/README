@@ -6,6 +6,8 @@ Script for standardizing the QTL mapping pipeline meta-analysis result files. It
 
 3. It enables to remove some per-cohort summary statistics from the file. NB! Meta-analyzed summary statistics will still be based on all the cohorts in the original meta-analysis!
 
+4. It enables to remove cohort-specific information (cohort names, Z-scores and sample sizes). Instead report the number of cohorts and number of samples where QTL was tested.
+
 Three mandatory arguments:
 
 --mapping_file  File with fixing information. Tab-delimited file with three columns:
@@ -22,4 +24,10 @@ Three mandatory arguments:
 
 Optional argument:
 
+--remove_cohort_specific_information If this flag is added, cohort-specific information is removed from the input file.
+
 -h help
+
+**Basic usage:** 
+
+python StandardizeQTLPipelineOutput.py name_mapping_file.txt input_eQTL_file.txt.gz standardized_eQTL_file
