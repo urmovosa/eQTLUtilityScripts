@@ -1,6 +1,6 @@
-###################################################################################
-# This script makes a chrohmm plot for given region, using Epigenome Roadmap data #
-###################################################################################
+#####################################################################################################
+# This script makes a chromHMM plot for given region, using Epigenome Roadmap 15-state segmentation #
+#####################################################################################################
 
 library(AnnotationHub)
 library(stringr)
@@ -52,7 +52,7 @@ for (i in c(1:127)) {
   print(i)
 }
 
-full_marks <- full_marks[full_marks$seqnames == chr & full_marks$start > pos_start - 1000 & full_marks$end < pos_end + 1000, ]
+full_marks <- full_marks[full_marks$seqnames == chr & ((full_marks$start > pos_start & full_marks$start < pos_end) | (full_marks$end > pos_start & full_marks$end < pos_end)))
 
 full_marks$end <- as.numeric(full_marks$end)
 full_marks <- full_marks[order(full_marks$tissue, full_marks$sample, full_marks$seqnames, full_marks$start), ]
@@ -162,7 +162,7 @@ plot(NULL, xlim = c(pos_start / 1000000, pos_end / 1000000), ylim = c(0, length(
 mtext(paste(chr, " position (Mb)(hg19)", sep = ""), side = 1, line = 2)
 
 j <- 0
-for (i in rev(unique(full_marks$sample))) {
+for (i in tissue_colors$sample)) {
   rect(full_marks[full_marks$sample == i, ]$start / 1000000,
     rep(j, nrow(full_marks[full_marks$sample == i, ])),
     full_marks[full_marks$sample == i, ]$end / 1000000,
