@@ -10,7 +10,8 @@ library(data.table)
 
 args <- commandArgs(trailingOnly = TRUE)
 
-args <- c("chr2", 113967387, 113992201, "png")
+# Inside of the script you can specify the argumets like that.
+# args <- c("chr2", 113967387, 113992201, "png")
 
 
 # Specify the positions
@@ -116,10 +117,10 @@ tissue_colors[tissue_colors$tissue == "Thymus", ]$color <- "black"
 ############################
 
 if (graphics_device == "png") {
-  png(paste(paste(chr, pos_start, pos_end, sep = "_"), "_", Sys.Date(), "_.png", sep = ""), width = 11, height = 4, units = "in", res = 600)
+  png(paste(paste(chr, pos_start, pos_end, sep = "_"), "_", Sys.Date(), ".png", sep = ""), width = 11, height = 4, units = "in", res = 600)
 }
 if (graphics_device == "pdf") {
-  pdf(paste(paste(chr, pos_start, pos_end, sep = "_"), "_", Sys.Date(), "_.pdf", sep = ""), width = 11, height = 4)
+  pdf(paste(paste(chr, pos_start, pos_end, sep = "_"), "_", Sys.Date(), ".pdf", sep = ""), width = 11, height = 4)
 }
 
 layout(matrix(c(1, 2, 3), 1, 3),
