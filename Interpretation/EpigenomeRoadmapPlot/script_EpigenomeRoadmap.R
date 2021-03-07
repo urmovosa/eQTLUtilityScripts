@@ -6,8 +6,12 @@ library(AnnotationHub)
 library(stringr)
 library(tidyr)
 library(rtracklayer)
+library(data.table)
 
 args <- commandArgs(trailingOnly = TRUE)
+
+args <- c("chr2", 113967387, 113992201, "png")
+
 
 # Specify the positions
 chr <- args[1]
@@ -15,51 +19,70 @@ pos_start <- as.numeric(args[2])
 pos_end <- as.numeric(args[3])
 graphics_device <- args[4]
 
-print(paste0('Chromosome: ', chr))
-print(paste0('Start position: ', pos_start))
-print(paste0('End position: ', pos_end))
-print(paste0('Will write file into format: ', graphics_device))
+print(paste0("Chromosome: ", chr))
+print(paste0("Start position: ", pos_start))
+print(paste0("End position: ", pos_end))
+print(paste0("Will write file into format: ", graphics_device))
 
-# Color scheme for annotations:
+# If ROADMAP file is not specified, download it:
+if (is.null(args[5])) {
+  ah <- AnnotationHub()
 
-ah <- AnnotationHub()
+  epiFiles <- query(ah, "EpigenomeRoadMap")
+  epiFiles <- epiFiles[epiFiles$description == "15 state chromatin segmentations from EpigenomeRoadMap Project", ]
 
-epiFiles <- query(ah, "EpigenomeRoadMap")
-epiFiles <- epiFiles[epiFiles$description == "15 state chromatin segmentations from EpigenomeRoadMap Project", ]
+  sourcetype <- as.data.frame(epiFiles$tags)
+  colnames(sourcetype) <- "tag"
+  sourcetype$tag <- as.character(sourcetype$tag)
+  sourcetype <- str_split_fixed(sourcetype$tag, ", ", 8)
 
-sourcetype <- as.data.frame(epiFiles$tags)
-colnames(sourcetype) <- "tag"
-sourcetype$tag <- as.character(sourcetype$tag)
-sourcetype <- str_split_fixed(sourcetype$tag, ", ", 8)
+  full_marks <- as.data.frame(matrix(NA, nrow = 2, ncol = 10))
+  colnames(full_marks) <- c(
+    "seqnames", "start", "end", "width", "strand", "abbr",
+    "name", "color_name", "color_code", "tissue"
+  )
 
-full_marks <- as.data.frame(matrix(NA, nrow = 2, ncol = 10))
-colnames(full_marks) <- c(
-  "seqnames", "start", "end", "width", "strand", "abbr",
-  "name", "color_name", "color_code", "tissue"
-)
+  full_marks <- full_marks[-c(1, 2), ]
 
-full_marks <- full_marks[-c(1, 2), ]
+  for (i in c(1:127)) {
+    marks <- epiFiles[[c(epiFiles$ah_id[i])]]
+    marks$sample <- sourcetype[, 5][i]
+    marks$tissue <- sourcetype[, 6][i]
+    # marks <- marks[seqnames(marks) == 'chr11' & ranges(marks)]
+    marks <- as.data.frame(marks)
+    # marks <- marks[marks$start > pos_start - 1000 & marks$end < pos_end + 1000, ]
 
-for (i in c(1:127)) {
-  marks <- epiFiles[[c(epiFiles$ah_id[i])]]
-  marks$sample <- sourcetype[, 5][i]
-  marks$tissue <- sourcetype[, 6][i]
-  # marks <- marks[seqnames(marks) == 'chr11' & ranges(marks)]
-  marks <- as.data.frame(marks)
-  # marks <- marks[marks$start > pos_start - 1000 & marks$end < pos_end + 1000, ]
-
-  full_marks <- rbind(full_marks, marks)
-  print(i)
+    full_marks <- rbind(full_marks, marks)
+    print(i)
+  }
+} else {
+  full_marks <- fread(args[5], sep = "\t")
 }
+# Temp
+# fwrite(full_marks, "full_marks.txt", sep = "\t", quote = FALSE)
 
-full_marks <- full_marks[full_marks$seqnames == chr & ((full_marks$start > pos_start & full_marks$start < pos_end) | (full_marks$end > pos_start & full_marks$end < pos_end)))
+# For plotting;
+# Add annotation for chromatin regions
+col_abi <- unique(full_marks[, c(7, 9)])
+col_abi <- col_abi[match(rev(c(
+  "Active TSS", "Flanking Active TSS", "Transcr. at gene 5' and 3'",
+  "Strong transcription", "Weak transcription", "Genic enhancers", "Enhancers",
+  "ZNF genes & repeats", "Heterochromatin", "Bivalent/Poised TSS", "Flanking Bivalent TSS/Enh", "Bivalent Enhancer", "Repressed PolyComb", "Weak Repressed PolyComb",
+  "Quiescent/Low"
+)), col_abi$name), ]
+
+# Filter region
+region_size <- (pos_end - pos_start) / 10
+
+full_marks <- full_marks[full_marks$seqnames == chr & ((full_marks$start > pos_start - region_size & full_marks$start < pos_end + region_size) | (full_marks$end > pos_start - region_size & full_marks$end < pos_end + region_size)), ]
 
 full_marks$end <- as.numeric(full_marks$end)
-full_marks <- full_marks[order(full_marks$tissue, full_marks$sample, full_marks$seqnames, full_marks$start), ]
+full_marks <- full_marks[base::order(full_marks$tissue, full_marks$sample, full_marks$seqnames, full_marks$start), ]
 full_marks$start <- as.numeric(full_marks$start)
 
-# Add colors for tissues:
+full_marks <- full_marks[base::order(full_marks$tissue, method = ), ]
 
+# Add colors for tissues:
 tissue_colors <- unique(full_marks[, c(10, 11)])
 tissue_colors$tissue <- as.factor(tissue_colors$tissue)
 
@@ -133,14 +156,12 @@ lines_help <- rbind(lines_help, data.frame(x_pos_start = min(full_marks$start), 
 
 
 # add text annotation for the tissues
-
 y_position <- seq(
   from = 0,
   to = length(unique(full_marks$sample)),
   by = length(unique(full_marks$sample)) / (length(unique(full_marks$tissue)) - 1)
 )
 
-y_position <- y_position
 x_position <- c(min(lines_help$x_pos_start) - ((min(lines_help$x_pos_end) - max(lines_help$x_pos_start))) * 0.7)
 
 text(labels = unique(tissue_colors$tissue), x = 4, y = y_position, pos = 2, col = unique(tissue_colors$color), cex = 1.5)
@@ -162,7 +183,7 @@ plot(NULL, xlim = c(pos_start / 1000000, pos_end / 1000000), ylim = c(0, length(
 mtext(paste(chr, " position (Mb)(hg19)", sep = ""), side = 1, line = 2)
 
 j <- 0
-for (i in tissue_colors$sample)) {
+for (i in tissue_colors$sample) {
   rect(full_marks[full_marks$sample == i, ]$start / 1000000,
     rep(j, nrow(full_marks[full_marks$sample == i, ])),
     full_marks[full_marks$sample == i, ]$end / 1000000,
@@ -182,16 +203,6 @@ box()
 for (i in 1:nrow(lines_help)) {
   lines(c(lines_help$x_pos_start[i] / 1000000 - 1000, lines_help$x_pos_end[i] / 1000000 + 1000), c(lines_help$y_pos[i], lines_help$y_pos[i]), lwd = 1)
 }
-
-# Add annotation for chromatin regions
-
-col_abi <- unique(full_marks[, c(7, 9)])
-col_abi <- col_abi[match(rev(c(
-  "Active TSS", "Flanking Active TSS", "Transcr. at gene 5' and 3'",
-  "Strong transcription", "Weak transcription", "Genic enhancers", "Enhancers",
-  "ZNF genes & repeats", "Heterochromatin", "Bivalent/Poised TSS", "Flanking Bivalent TSS/Enh", "Bivalent Enhancer", "Repressed PolyComb", "Weak Repressed PolyComb",
-  "Quiescent/Low"
-)), col_abi$name), ]
 
 
 plot(NULL, xlim = c(1, 6), ylim = c(0, length(unique(full_marks$sample))), axes = F)

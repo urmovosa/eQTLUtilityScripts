@@ -6,6 +6,7 @@ chr: chr1/chr2/...
 start position: start pos in hg19 
 end position: start pos in hg19
 graphic device: png/pdf
+input Epigenome Roadmap file (optional): tab-delimited file to Roadmap Epigenomics data. If not specified, script downloads the data from AnnotationHub.
 
 Usage: 
 
