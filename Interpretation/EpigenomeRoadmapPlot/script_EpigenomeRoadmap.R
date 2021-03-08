@@ -24,9 +24,10 @@ print(paste0("Chromosome: ", chr))
 print(paste0("Start position: ", pos_start))
 print(paste0("End position: ", pos_end))
 print(paste0("Will write file into format: ", graphics_device))
+print(paste0("Epigenomics Roadmap file: ", args[5]))
 
 # If ROADMAP file is not specified, download it:
-if (is.null(args[5])) {
+if (is.na(args[5])) {
   ah <- AnnotationHub()
 
   epiFiles <- query(ah, "EpigenomeRoadMap")
